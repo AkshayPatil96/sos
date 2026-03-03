@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      target: production
+    command: sh -c "pnpm prisma:migrate:deploy && node dist/server.js"
+    environment:
+      NODE_ENV: production
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'

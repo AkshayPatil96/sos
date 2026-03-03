@@ -1,0 +1,35 @@
+import type { Pagination } from './response';
+
+export interface PaginationQuery {
+  page?: string;
+  limit?: string;
+}
+
+/**
+ * Safely parses page/limit from query string parameters with defaults.
+ */
+export function parsePaginationQuery(query: PaginationQuery): {
+  page: number;
+  limit: number;
+  skip: number;
+} {
+  const page = Math.max(1, parseInt(query.page ?? '1', 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(query.limit ?? '20', 10) || 20));
+  const skip = (page - 1) * limit;
+  return { page, limit, skip };
+}
+
+/**
+ * Builds a Pagination metadata object from page/limit/total values.
+ */
+export function buildPagination(page: number, limit: number, total: number): Pagination {
+  const totalPages = Math.ceil(total / limit);
+  return {
+    page,
+    limit,
+    total,
+    totalPages,
+    hasNext: page < totalPages,
+    hasPrev: page > 1,
+  };
+}
