@@ -269,6 +269,22 @@ export type UserWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<'User'> | Date | string;
   deletedAt?: Prisma.DateTimeNullableFilter<'User'> | Date | string | null;
   refreshTokens?: Prisma.RefreshTokenListRelationFilter;
+  superAdminProfile?: Prisma.XOR<
+    Prisma.SuperAdminProfileNullableScalarRelationFilter,
+    Prisma.SuperAdminProfileWhereInput
+  > | null;
+  adminProfile?: Prisma.XOR<
+    Prisma.AdminProfileNullableScalarRelationFilter,
+    Prisma.AdminProfileWhereInput
+  > | null;
+  staffProfile?: Prisma.XOR<
+    Prisma.StaffProfileNullableScalarRelationFilter,
+    Prisma.StaffProfileWhereInput
+  > | null;
+  studentProfile?: Prisma.XOR<
+    Prisma.StudentProfileNullableScalarRelationFilter,
+    Prisma.StudentProfileWhereInput
+  > | null;
 };
 
 export type UserOrderByWithRelationInput = {
@@ -285,6 +301,10 @@ export type UserOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder;
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   refreshTokens?: Prisma.RefreshTokenOrderByRelationAggregateInput;
+  superAdminProfile?: Prisma.SuperAdminProfileOrderByWithRelationInput;
+  adminProfile?: Prisma.AdminProfileOrderByWithRelationInput;
+  staffProfile?: Prisma.StaffProfileOrderByWithRelationInput;
+  studentProfile?: Prisma.StudentProfileOrderByWithRelationInput;
 };
 
 export type UserWhereUniqueInput = Prisma.AtLeast<
@@ -305,6 +325,22 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
     updatedAt?: Prisma.DateTimeFilter<'User'> | Date | string;
     deletedAt?: Prisma.DateTimeNullableFilter<'User'> | Date | string | null;
     refreshTokens?: Prisma.RefreshTokenListRelationFilter;
+    superAdminProfile?: Prisma.XOR<
+      Prisma.SuperAdminProfileNullableScalarRelationFilter,
+      Prisma.SuperAdminProfileWhereInput
+    > | null;
+    adminProfile?: Prisma.XOR<
+      Prisma.AdminProfileNullableScalarRelationFilter,
+      Prisma.AdminProfileWhereInput
+    > | null;
+    staffProfile?: Prisma.XOR<
+      Prisma.StaffProfileNullableScalarRelationFilter,
+      Prisma.StaffProfileWhereInput
+    > | null;
+    studentProfile?: Prisma.XOR<
+      Prisma.StudentProfileNullableScalarRelationFilter,
+      Prisma.StudentProfileWhereInput
+    > | null;
   },
   'id' | 'email'
 >;
@@ -361,6 +397,10 @@ export type UserCreateInput = {
   updatedAt?: Date | string;
   deletedAt?: Date | string | null;
   refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
+  superAdminProfile?: Prisma.SuperAdminProfileCreateNestedOneWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput;
 };
 
 export type UserUncheckedCreateInput = {
@@ -377,6 +417,10 @@ export type UserUncheckedCreateInput = {
   updatedAt?: Date | string;
   deletedAt?: Date | string | null;
   refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput;
 };
 
 export type UserUpdateInput = {
@@ -393,6 +437,10 @@ export type UserUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUpdateOneWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput;
 };
 
 export type UserUncheckedUpdateInput = {
@@ -409,6 +457,10 @@ export type UserUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput;
 };
 
 export type UserCreateManyInput = {
@@ -542,6 +594,110 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string;
 };
 
+export type UserCreateNestedOneWithoutSuperAdminProfileInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutSuperAdminProfileInput,
+    Prisma.UserUncheckedCreateWithoutSuperAdminProfileInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSuperAdminProfileInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutSuperAdminProfileNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutSuperAdminProfileInput,
+    Prisma.UserUncheckedCreateWithoutSuperAdminProfileInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSuperAdminProfileInput;
+  upsert?: Prisma.UserUpsertWithoutSuperAdminProfileInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutSuperAdminProfileInput,
+      Prisma.UserUpdateWithoutSuperAdminProfileInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutSuperAdminProfileInput
+  >;
+};
+
+export type UserCreateNestedOneWithoutAdminProfileInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutAdminProfileInput,
+    Prisma.UserUncheckedCreateWithoutAdminProfileInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAdminProfileInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutAdminProfileNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutAdminProfileInput,
+    Prisma.UserUncheckedCreateWithoutAdminProfileInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAdminProfileInput;
+  upsert?: Prisma.UserUpsertWithoutAdminProfileInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutAdminProfileInput,
+      Prisma.UserUpdateWithoutAdminProfileInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutAdminProfileInput
+  >;
+};
+
+export type UserCreateNestedOneWithoutStaffProfileInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutStaffProfileInput,
+    Prisma.UserUncheckedCreateWithoutStaffProfileInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStaffProfileInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutStaffProfileNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutStaffProfileInput,
+    Prisma.UserUncheckedCreateWithoutStaffProfileInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStaffProfileInput;
+  upsert?: Prisma.UserUpsertWithoutStaffProfileInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutStaffProfileInput,
+      Prisma.UserUpdateWithoutStaffProfileInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutStaffProfileInput
+  >;
+};
+
+export type UserCreateNestedOneWithoutStudentProfileInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutStudentProfileInput,
+    Prisma.UserUncheckedCreateWithoutStudentProfileInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProfileInput;
+  connect?: Prisma.UserWhereUniqueInput;
+};
+
+export type UserUpdateOneRequiredWithoutStudentProfileNestedInput = {
+  create?: Prisma.XOR<
+    Prisma.UserCreateWithoutStudentProfileInput,
+    Prisma.UserUncheckedCreateWithoutStudentProfileInput
+  >;
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutStudentProfileInput;
+  upsert?: Prisma.UserUpsertWithoutStudentProfileInput;
+  connect?: Prisma.UserWhereUniqueInput;
+  update?: Prisma.XOR<
+    Prisma.XOR<
+      Prisma.UserUpdateToOneWithWhereWithoutStudentProfileInput,
+      Prisma.UserUpdateWithoutStudentProfileInput
+    >,
+    Prisma.UserUncheckedUpdateWithoutStudentProfileInput
+  >;
+};
+
 export type UserCreateNestedOneWithoutRefreshTokensInput = {
   create?: Prisma.XOR<
     Prisma.UserCreateWithoutRefreshTokensInput,
@@ -568,6 +724,422 @@ export type UserUpdateOneRequiredWithoutRefreshTokensNestedInput = {
   >;
 };
 
+export type UserCreateWithoutSuperAdminProfileInput = {
+  id?: string;
+  email: string;
+  password: string;
+  name: string;
+  role: $Enums.UserRole;
+  status?: $Enums.UserStatus;
+  failedLoginCount?: number;
+  lockedAt?: Date | string | null;
+  lastLoginAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput;
+};
+
+export type UserUncheckedCreateWithoutSuperAdminProfileInput = {
+  id?: string;
+  email: string;
+  password: string;
+  name: string;
+  role: $Enums.UserRole;
+  status?: $Enums.UserStatus;
+  failedLoginCount?: number;
+  lockedAt?: Date | string | null;
+  lastLoginAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput;
+};
+
+export type UserCreateOrConnectWithoutSuperAdminProfileInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutSuperAdminProfileInput,
+    Prisma.UserUncheckedCreateWithoutSuperAdminProfileInput
+  >;
+};
+
+export type UserUpsertWithoutSuperAdminProfileInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutSuperAdminProfileInput,
+    Prisma.UserUncheckedUpdateWithoutSuperAdminProfileInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutSuperAdminProfileInput,
+    Prisma.UserUncheckedCreateWithoutSuperAdminProfileInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutSuperAdminProfileInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutSuperAdminProfileInput,
+    Prisma.UserUncheckedUpdateWithoutSuperAdminProfileInput
+  >;
+};
+
+export type UserUpdateWithoutSuperAdminProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutSuperAdminProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput;
+};
+
+export type UserCreateWithoutAdminProfileInput = {
+  id?: string;
+  email: string;
+  password: string;
+  name: string;
+  role: $Enums.UserRole;
+  status?: $Enums.UserStatus;
+  failedLoginCount?: number;
+  lockedAt?: Date | string | null;
+  lastLoginAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
+  superAdminProfile?: Prisma.SuperAdminProfileCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput;
+};
+
+export type UserUncheckedCreateWithoutAdminProfileInput = {
+  id?: string;
+  email: string;
+  password: string;
+  name: string;
+  role: $Enums.UserRole;
+  status?: $Enums.UserStatus;
+  failedLoginCount?: number;
+  lockedAt?: Date | string | null;
+  lastLoginAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput;
+};
+
+export type UserCreateOrConnectWithoutAdminProfileInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutAdminProfileInput,
+    Prisma.UserUncheckedCreateWithoutAdminProfileInput
+  >;
+};
+
+export type UserUpsertWithoutAdminProfileInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutAdminProfileInput,
+    Prisma.UserUncheckedUpdateWithoutAdminProfileInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutAdminProfileInput,
+    Prisma.UserUncheckedCreateWithoutAdminProfileInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutAdminProfileInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutAdminProfileInput,
+    Prisma.UserUncheckedUpdateWithoutAdminProfileInput
+  >;
+};
+
+export type UserUpdateWithoutAdminProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutAdminProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput;
+};
+
+export type UserCreateWithoutStaffProfileInput = {
+  id?: string;
+  email: string;
+  password: string;
+  name: string;
+  role: $Enums.UserRole;
+  status?: $Enums.UserStatus;
+  failedLoginCount?: number;
+  lockedAt?: Date | string | null;
+  lastLoginAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
+  superAdminProfile?: Prisma.SuperAdminProfileCreateNestedOneWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput;
+};
+
+export type UserUncheckedCreateWithoutStaffProfileInput = {
+  id?: string;
+  email: string;
+  password: string;
+  name: string;
+  role: $Enums.UserRole;
+  status?: $Enums.UserStatus;
+  failedLoginCount?: number;
+  lockedAt?: Date | string | null;
+  lastLoginAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput;
+};
+
+export type UserCreateOrConnectWithoutStaffProfileInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutStaffProfileInput,
+    Prisma.UserUncheckedCreateWithoutStaffProfileInput
+  >;
+};
+
+export type UserUpsertWithoutStaffProfileInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutStaffProfileInput,
+    Prisma.UserUncheckedUpdateWithoutStaffProfileInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutStaffProfileInput,
+    Prisma.UserUncheckedCreateWithoutStaffProfileInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutStaffProfileInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutStaffProfileInput,
+    Prisma.UserUncheckedUpdateWithoutStaffProfileInput
+  >;
+};
+
+export type UserUpdateWithoutStaffProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUpdateOneWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutStaffProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput;
+};
+
+export type UserCreateWithoutStudentProfileInput = {
+  id?: string;
+  email: string;
+  password: string;
+  name: string;
+  role: $Enums.UserRole;
+  status?: $Enums.UserStatus;
+  failedLoginCount?: number;
+  lockedAt?: Date | string | null;
+  lastLoginAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput;
+  superAdminProfile?: Prisma.SuperAdminProfileCreateNestedOneWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput;
+};
+
+export type UserUncheckedCreateWithoutStudentProfileInput = {
+  id?: string;
+  email: string;
+  password: string;
+  name: string;
+  role: $Enums.UserRole;
+  status?: $Enums.UserStatus;
+  failedLoginCount?: number;
+  lockedAt?: Date | string | null;
+  lastLoginAt?: Date | string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput;
+};
+
+export type UserCreateOrConnectWithoutStudentProfileInput = {
+  where: Prisma.UserWhereUniqueInput;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutStudentProfileInput,
+    Prisma.UserUncheckedCreateWithoutStudentProfileInput
+  >;
+};
+
+export type UserUpsertWithoutStudentProfileInput = {
+  update: Prisma.XOR<
+    Prisma.UserUpdateWithoutStudentProfileInput,
+    Prisma.UserUncheckedUpdateWithoutStudentProfileInput
+  >;
+  create: Prisma.XOR<
+    Prisma.UserCreateWithoutStudentProfileInput,
+    Prisma.UserUncheckedCreateWithoutStudentProfileInput
+  >;
+  where?: Prisma.UserWhereInput;
+};
+
+export type UserUpdateToOneWithWhereWithoutStudentProfileInput = {
+  where?: Prisma.UserWhereInput;
+  data: Prisma.XOR<
+    Prisma.UserUpdateWithoutStudentProfileInput,
+    Prisma.UserUncheckedUpdateWithoutStudentProfileInput
+  >;
+};
+
+export type UserUpdateWithoutStudentProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUpdateOneWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput;
+};
+
+export type UserUncheckedUpdateWithoutStudentProfileInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string;
+  email?: Prisma.StringFieldUpdateOperationsInput | string;
+  password?: Prisma.StringFieldUpdateOperationsInput | string;
+  name?: Prisma.StringFieldUpdateOperationsInput | string;
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole;
+  status?: Prisma.EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus;
+  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
+  lockedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+  deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  refreshTokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput;
+};
+
 export type UserCreateWithoutRefreshTokensInput = {
   id?: string;
   email: string;
@@ -581,6 +1153,10 @@ export type UserCreateWithoutRefreshTokensInput = {
   createdAt?: Date | string;
   updatedAt?: Date | string;
   deletedAt?: Date | string | null;
+  superAdminProfile?: Prisma.SuperAdminProfileCreateNestedOneWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileCreateNestedOneWithoutUserInput;
 };
 
 export type UserUncheckedCreateWithoutRefreshTokensInput = {
@@ -596,6 +1172,10 @@ export type UserUncheckedCreateWithoutRefreshTokensInput = {
   createdAt?: Date | string;
   updatedAt?: Date | string;
   deletedAt?: Date | string | null;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  adminProfile?: Prisma.AdminProfileUncheckedCreateNestedOneWithoutUserInput;
+  staffProfile?: Prisma.StaffProfileUncheckedCreateNestedOneWithoutUserInput;
+  studentProfile?: Prisma.StudentProfileUncheckedCreateNestedOneWithoutUserInput;
 };
 
 export type UserCreateOrConnectWithoutRefreshTokensInput = {
@@ -639,6 +1219,10 @@ export type UserUpdateWithoutRefreshTokensInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  superAdminProfile?: Prisma.SuperAdminProfileUpdateOneWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUpdateOneWithoutUserNestedInput;
 };
 
 export type UserUncheckedUpdateWithoutRefreshTokensInput = {
@@ -654,6 +1238,10 @@ export type UserUncheckedUpdateWithoutRefreshTokensInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+  superAdminProfile?: Prisma.SuperAdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  adminProfile?: Prisma.AdminProfileUncheckedUpdateOneWithoutUserNestedInput;
+  staffProfile?: Prisma.StaffProfileUncheckedUpdateOneWithoutUserNestedInput;
+  studentProfile?: Prisma.StudentProfileUncheckedUpdateOneWithoutUserNestedInput;
 };
 
 /**
@@ -708,6 +1296,10 @@ export type UserSelect<
     updatedAt?: boolean;
     deletedAt?: boolean;
     refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>;
+    superAdminProfile?: boolean | Prisma.User$superAdminProfileArgs<ExtArgs>;
+    adminProfile?: boolean | Prisma.User$adminProfileArgs<ExtArgs>;
+    staffProfile?: boolean | Prisma.User$staffProfileArgs<ExtArgs>;
+    studentProfile?: boolean | Prisma.User$studentProfileArgs<ExtArgs>;
     _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['user']
@@ -789,6 +1381,10 @@ export type UserInclude<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
   refreshTokens?: boolean | Prisma.User$refreshTokensArgs<ExtArgs>;
+  superAdminProfile?: boolean | Prisma.User$superAdminProfileArgs<ExtArgs>;
+  adminProfile?: boolean | Prisma.User$adminProfileArgs<ExtArgs>;
+  staffProfile?: boolean | Prisma.User$staffProfileArgs<ExtArgs>;
+  studentProfile?: boolean | Prisma.User$studentProfileArgs<ExtArgs>;
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type UserIncludeCreateManyAndReturn<
@@ -804,6 +1400,10 @@ export type $UserPayload<
   name: 'User';
   objects: {
     refreshTokens: Prisma.$RefreshTokenPayload<ExtArgs>[];
+    superAdminProfile: Prisma.$SuperAdminProfilePayload<ExtArgs> | null;
+    adminProfile: Prisma.$AdminProfilePayload<ExtArgs> | null;
+    staffProfile: Prisma.$StaffProfilePayload<ExtArgs> | null;
+    studentProfile: Prisma.$StudentProfilePayload<ExtArgs> | null;
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -1340,6 +1940,58 @@ export interface Prisma__UserClient<
       >
     | Null
   >;
+  superAdminProfile<T extends Prisma.User$superAdminProfileArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$superAdminProfileArgs<ExtArgs>>,
+  ): Prisma.Prisma__SuperAdminProfileClient<
+    runtime.Types.Result.GetResult<
+      Prisma.$SuperAdminProfilePayload<ExtArgs>,
+      T,
+      'findUniqueOrThrow',
+      GlobalOmitOptions
+    > | null,
+    null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
+  adminProfile<T extends Prisma.User$adminProfileArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$adminProfileArgs<ExtArgs>>,
+  ): Prisma.Prisma__AdminProfileClient<
+    runtime.Types.Result.GetResult<
+      Prisma.$AdminProfilePayload<ExtArgs>,
+      T,
+      'findUniqueOrThrow',
+      GlobalOmitOptions
+    > | null,
+    null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
+  staffProfile<T extends Prisma.User$staffProfileArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$staffProfileArgs<ExtArgs>>,
+  ): Prisma.Prisma__StaffProfileClient<
+    runtime.Types.Result.GetResult<
+      Prisma.$StaffProfilePayload<ExtArgs>,
+      T,
+      'findUniqueOrThrow',
+      GlobalOmitOptions
+    > | null,
+    null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
+  studentProfile<T extends Prisma.User$studentProfileArgs<ExtArgs> = {}>(
+    args?: Prisma.Subset<T, Prisma.User$studentProfileArgs<ExtArgs>>,
+  ): Prisma.Prisma__StudentProfileClient<
+    runtime.Types.Result.GetResult<
+      Prisma.$StudentProfilePayload<ExtArgs>,
+      T,
+      'findUniqueOrThrow',
+      GlobalOmitOptions
+    > | null,
+    null,
+    ExtArgs,
+    GlobalOmitOptions
+  >;
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1823,6 +2475,90 @@ export type User$refreshTokensArgs<
   take?: number;
   skip?: number;
   distinct?: Prisma.RefreshTokenScalarFieldEnum | Prisma.RefreshTokenScalarFieldEnum[];
+};
+
+/**
+ * User.superAdminProfile
+ */
+export type User$superAdminProfileArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the SuperAdminProfile
+   */
+  select?: Prisma.SuperAdminProfileSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the SuperAdminProfile
+   */
+  omit?: Prisma.SuperAdminProfileOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SuperAdminProfileInclude<ExtArgs> | null;
+  where?: Prisma.SuperAdminProfileWhereInput;
+};
+
+/**
+ * User.adminProfile
+ */
+export type User$adminProfileArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the AdminProfile
+   */
+  select?: Prisma.AdminProfileSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the AdminProfile
+   */
+  omit?: Prisma.AdminProfileOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AdminProfileInclude<ExtArgs> | null;
+  where?: Prisma.AdminProfileWhereInput;
+};
+
+/**
+ * User.staffProfile
+ */
+export type User$staffProfileArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the StaffProfile
+   */
+  select?: Prisma.StaffProfileSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the StaffProfile
+   */
+  omit?: Prisma.StaffProfileOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StaffProfileInclude<ExtArgs> | null;
+  where?: Prisma.StaffProfileWhereInput;
+};
+
+/**
+ * User.studentProfile
+ */
+export type User$studentProfileArgs<
+  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
+> = {
+  /**
+   * Select specific fields to fetch from the StudentProfile
+   */
+  select?: Prisma.StudentProfileSelect<ExtArgs> | null;
+  /**
+   * Omit specific fields from the StudentProfile
+   */
+  omit?: Prisma.StudentProfileOmit<ExtArgs> | null;
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StudentProfileInclude<ExtArgs> | null;
+  where?: Prisma.StudentProfileWhereInput;
 };
 
 /**

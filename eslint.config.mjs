@@ -41,7 +41,7 @@ export default defineConfig([
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      'no-console': 'warn',
+      // 'no-console': 'warn',
     },
   },
   prettierConfig,

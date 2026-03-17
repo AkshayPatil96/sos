@@ -161,21 +161,6 @@ export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>;
 };
 
-export type StringNullableFilter<$PrismaModel = never> = {
-  equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null;
-  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
-  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
-  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  contains?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  startsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  endsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  mode?: Prisma.QueryMode;
-  not?: Prisma.NestedStringNullableFilter<$PrismaModel> | string | null;
-};
-
 export type JsonNullableFilter<$PrismaModel = never> =
   | Prisma.PatchUndefined<
       Prisma.Either<
@@ -207,24 +192,6 @@ export type JsonNullableFilterBase<$PrismaModel = never> = {
     | runtime.InputJsonValue
     | Prisma.JsonFieldRefInput<$PrismaModel>
     | Prisma.JsonNullValueFilter;
-};
-
-export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null;
-  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
-  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
-  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  contains?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  startsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  endsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  mode?: Prisma.QueryMode;
-  not?: Prisma.NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null;
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>;
-  _min?: Prisma.NestedStringNullableFilter<$PrismaModel>;
-  _max?: Prisma.NestedStringNullableFilter<$PrismaModel>;
 };
 
 export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
@@ -261,6 +228,39 @@ export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
   _count?: Prisma.NestedIntNullableFilter<$PrismaModel>;
   _min?: Prisma.NestedJsonNullableFilter<$PrismaModel>;
   _max?: Prisma.NestedJsonNullableFilter<$PrismaModel>;
+};
+
+export type StringNullableFilter<$PrismaModel = never> = {
+  equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null;
+  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
+  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
+  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  contains?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  startsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  endsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  mode?: Prisma.QueryMode;
+  not?: Prisma.NestedStringNullableFilter<$PrismaModel> | string | null;
+};
+
+export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null;
+  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
+  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
+  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  contains?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  startsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  endsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  mode?: Prisma.QueryMode;
+  not?: Prisma.NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null;
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>;
+  _min?: Prisma.NestedStringNullableFilter<$PrismaModel>;
+  _max?: Prisma.NestedStringNullableFilter<$PrismaModel>;
 };
 
 export type NestedStringFilter<$PrismaModel = never> = {
@@ -427,37 +427,6 @@ export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>;
 };
 
-export type NestedStringNullableFilter<$PrismaModel = never> = {
-  equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null;
-  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
-  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
-  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  contains?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  startsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  endsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  not?: Prisma.NestedStringNullableFilter<$PrismaModel> | string | null;
-};
-
-export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null;
-  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
-  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
-  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  contains?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  startsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  endsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
-  not?: Prisma.NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null;
-  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>;
-  _min?: Prisma.NestedStringNullableFilter<$PrismaModel>;
-  _max?: Prisma.NestedStringNullableFilter<$PrismaModel>;
-};
-
 export type NestedJsonNullableFilter<$PrismaModel = never> =
   | Prisma.PatchUndefined<
       Prisma.Either<
@@ -489,4 +458,35 @@ export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
     | runtime.InputJsonValue
     | Prisma.JsonFieldRefInput<$PrismaModel>
     | Prisma.JsonNullValueFilter;
+};
+
+export type NestedStringNullableFilter<$PrismaModel = never> = {
+  equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null;
+  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
+  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
+  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  contains?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  startsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  endsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedStringNullableFilter<$PrismaModel> | string | null;
+};
+
+export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: string | Prisma.StringFieldRefInput<$PrismaModel> | null;
+  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
+  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel> | null;
+  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  contains?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  startsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  endsWith?: string | Prisma.StringFieldRefInput<$PrismaModel>;
+  not?: Prisma.NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null;
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>;
+  _min?: Prisma.NestedStringNullableFilter<$PrismaModel>;
+  _max?: Prisma.NestedStringNullableFilter<$PrismaModel>;
 };

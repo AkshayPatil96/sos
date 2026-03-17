@@ -22,6 +22,36 @@ export * from './enums';
  */
 export type User = Prisma.UserModel;
 /**
+ * Model SuperAdminProfile
+ *
+ */
+export type SuperAdminProfile = Prisma.SuperAdminProfileModel;
+/**
+ * Model AdminProfile
+ *
+ */
+export type AdminProfile = Prisma.AdminProfileModel;
+/**
+ * Model StaffProfile
+ *
+ */
+export type StaffProfile = Prisma.StaffProfileModel;
+/**
+ * Model StudentProfile
+ *
+ */
+export type StudentProfile = Prisma.StudentProfileModel;
+/**
+ * Model Permission
+ *
+ */
+export type Permission = Prisma.PermissionModel;
+/**
+ * Model RolePermission
+ *
+ */
+export type RolePermission = Prisma.RolePermissionModel;
+/**
  * Model RefreshToken
  *
  */

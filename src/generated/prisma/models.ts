@@ -8,6 +8,12 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User';
+export type * from './models/SuperAdminProfile';
+export type * from './models/AdminProfile';
+export type * from './models/StaffProfile';
+export type * from './models/StudentProfile';
+export type * from './models/Permission';
+export type * from './models/RolePermission';
 export type * from './models/RefreshToken';
 export type * from './models/AuditLog';
 export type * from './commonInputTypes';

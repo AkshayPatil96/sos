@@ -49,6 +49,12 @@ export const AnyNull = runtime.AnyNull;
 
 export const ModelName = {
   User: 'User',
+  SuperAdminProfile: 'SuperAdminProfile',
+  AdminProfile: 'AdminProfile',
+  StaffProfile: 'StaffProfile',
+  StudentProfile: 'StudentProfile',
+  Permission: 'Permission',
+  RolePermission: 'RolePermission',
   RefreshToken: 'RefreshToken',
   AuditLog: 'AuditLog',
 } as const;
@@ -85,6 +91,69 @@ export const UserScalarFieldEnum = {
 } as const;
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum];
+
+export const SuperAdminProfileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  data: 'data',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type SuperAdminProfileScalarFieldEnum =
+  (typeof SuperAdminProfileScalarFieldEnum)[keyof typeof SuperAdminProfileScalarFieldEnum];
+
+export const AdminProfileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  data: 'data',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type AdminProfileScalarFieldEnum =
+  (typeof AdminProfileScalarFieldEnum)[keyof typeof AdminProfileScalarFieldEnum];
+
+export const StaffProfileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  data: 'data',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type StaffProfileScalarFieldEnum =
+  (typeof StaffProfileScalarFieldEnum)[keyof typeof StaffProfileScalarFieldEnum];
+
+export const StudentProfileScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  data: 'data',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type StudentProfileScalarFieldEnum =
+  (typeof StudentProfileScalarFieldEnum)[keyof typeof StudentProfileScalarFieldEnum];
+
+export const PermissionScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+} as const;
+
+export type PermissionScalarFieldEnum =
+  (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum];
+
+export const RolePermissionScalarFieldEnum = {
+  role: 'role',
+  permissionId: 'permissionId',
+} as const;
+
+export type RolePermissionScalarFieldEnum =
+  (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum];
 
 export const RefreshTokenScalarFieldEnum = {
   id: 'id',
