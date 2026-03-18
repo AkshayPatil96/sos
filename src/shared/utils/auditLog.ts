@@ -1,13 +1,17 @@
 import { prisma } from '@/lib/prisma';
 import { logger } from './logger';
+import { getRequestContext } from '@/lib/requestContext';
 
 interface AuditLogParams {
   userId?: string;
+  userEmail?: string;
+  userRole?: string;
   action: string;
-  entity: string;
+  severity: 'low' | 'medium' | 'high';
+  entity: string; // e.g. "User", "Post", "Order"
   entityId?: string;
-  before?: unknown;
-  after?: unknown;
+  before?: Record<string, unknown>;
+  after?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
 }
@@ -17,15 +21,20 @@ interface AuditLogParams {
  * Failures are silently swallowed — audit log errors must never crash the main request.
  */
 export async function writeAuditLog(params: AuditLogParams): Promise<void> {
+  const context = getRequestContext();
+
   try {
     await prisma.auditLog.create({
       data: {
-        userId: params.userId,
+        userId: params.userId ?? context?.userId,
+        userEmail: params.userEmail,
+        userRole: params.userRole ?? context?.userRole,
         action: params.action,
+        severity: params.severity,
         entity: params.entity,
         entityId: params.entityId,
-        before: (params.before as object | undefined) ?? undefined,
-        after: (params.after as object | undefined) ?? undefined,
+        before: (params.before as object) ?? undefined,
+        after: (params.after as object) ?? undefined,
         ipAddress: params.ipAddress,
         userAgent: params.userAgent,
       },

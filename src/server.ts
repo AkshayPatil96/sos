@@ -1,3 +1,7 @@
+// IMPORTANT: @/lib/sentry MUST be the first import so Sentry.init() runs before
+// Express, Prisma, or any other module is loaded. Do not move this line.
+import '@/lib/sentry';
+
 import http from 'http';
 import app from '@/app';
 import { config } from '@/shared/config';

@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s      # How often Prometheus polls each target
+  evaluation_interval: 15s  # How often alerting rules are evaluated
+
+scrape_configs:
+  - job_name: 'student-api'
+    static_configs:
+      - targets: ['api:3000']   # Docker service name + port
+    metrics_path: '/metrics'
+    scrape_interval: 15s

@@ -26,6 +26,7 @@ const envSchema = z.object({
   AWS_S3_BUCKET: z.string().optional(),
   AWS_S3_PRESIGNED_URL_EXPIRY: z.string().default('900').transform(Number),
 
+  SENTRY_DSN: z.string().url().optional(),
   LOG_LEVEL: z.enum(['debug', 'info', 'http', 'warn', 'error']).default('info'),
 
   RATE_LIMIT_WINDOW_MS: z.string().default('900000').transform(Number),
@@ -37,7 +38,6 @@ const envSchema = z.object({
 });
 
 const result = envSchema.safeParse(process.env);
-console.log('result:===================> ', result);
 
 if (!result.success) {
   // Logger not yet available at config parse time — console is intentional here

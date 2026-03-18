@@ -1,5 +1,6 @@
 import winston from 'winston';
 import { config } from '@/shared/config';
+import { getRequestId } from '@/lib/requestContext';
 
 const LOG_LEVELS = {
   error: 0,
@@ -19,7 +20,17 @@ const LOG_COLORS = {
 
 winston.addColors(LOG_COLORS);
 
+// Add a custom format that injects requestId from the context
+const injectRequestId = winston.format((info) => {
+  const requestId = getRequestId();
+  if (requestId !== 'no-request-context') {
+    info['requestId'] = requestId;
+  }
+  return info;
+});
+
 const devFormat = winston.format.combine(
+  injectRequestId(),
   winston.format.colorize({ all: true }),
   winston.format.timestamp({ format: 'HH:mm:ss' }),
   winston.format.errors({ stack: true }),
@@ -31,6 +42,7 @@ const devFormat = winston.format.combine(
 );
 
 const prodFormat = winston.format.combine(
+  injectRequestId(),
   winston.format.timestamp(),
   winston.format.errors({ stack: true }),
   winston.format.json(),
