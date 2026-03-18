@@ -1,1 +1,17 @@
-pnpm exec lint-staged
+#!/usr/bin/env sh
+# Run ESLint + Prettier on staged TypeScript files only.
+# Avoids lint-staged v16 tinyexec spawn failures on Windows.
+
+STAGED_TS=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.ts$' | tr '\n' ' ')
+
+if [ -z "$STAGED_TS" ]; then
+  exit 0
+fi
+
+echo "Running ESLint..."
+./node_modules/.bin/eslint --fix --max-warnings 0 --no-warn-ignored $STAGED_TS || exit 1
+git add $STAGED_TS
+
+echo "Running Prettier..."
+./node_modules/.bin/prettier --write $STAGED_TS
+git add $STAGED_TS

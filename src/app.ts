@@ -2,6 +2,7 @@ import express, { NextFunction, type Application, Request, Response } from 'expr
 import helmet from 'helmet';
 import cors from 'cors';
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import { v4 as uuidv4 } from 'uuid';
 import hpp from 'hpp';
 import listEndpoints from 'express-list-endpoints';
@@ -59,6 +60,9 @@ app.use(express.json({ limit: '10mb' }));
 
 // 5. URL-encoded body parser
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// 5a. Cookie parser — required for httpOnly refresh token cookie
+app.use(cookieParser());
 
 // 6. Response compression
 app.use(compression());

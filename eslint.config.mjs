@@ -2,7 +2,7 @@
 import eslintPlugin from '@typescript-eslint/eslint-plugin';
 import eslintParser from '@typescript-eslint/parser';
 import prettierConfig from 'eslint-config-prettier';
-import { defineConfig } from "eslint/config";
+import { defineConfig } from 'eslint/config';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -12,7 +12,15 @@ const __dirname = path.dirname(__filename);
 /** @type {import('eslint').Linter.Config[]} */
 export default defineConfig([
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'src/generated/**', // ← this line — Prisma generated client
+      'prisma/**',
+      'coverage/**',
+      '*.config.*',
+      '.husky/**',
+    ],
   },
   {
     files: ['src/**/*.ts'],

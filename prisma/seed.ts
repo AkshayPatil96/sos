@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { prisma } from '../src/lib/prisma';
-import { UserRole, UserStatus } from '../src/generated/prisma/enums';
+import { UserRole, UserStatus } from '../src/generated/prisma/client';
 
 // const prisma = new PrismaClient();
 
@@ -42,9 +42,7 @@ async function main(): Promise<void> {
     select: { id: true, code: true },
   });
 
-  const permissionIdByCode = new Map(
-    permissionRecords.map((p: any) => [p.code, p.id]),
-  );
+  const permissionIdByCode = new Map(permissionRecords.map((p: any) => [p.code, p.id]));
 
   const rolePermissionData = [
     {

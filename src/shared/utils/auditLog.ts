@@ -1,13 +1,16 @@
 import { prisma } from '@/lib/prisma';
+import { AuditSeverity } from '@/generated/prisma/client';
 import { logger } from './logger';
 import { getRequestContext } from '@/lib/requestContext';
+
+type SeverityInput = 'low' | 'medium' | 'high' | 'critical';
 
 interface AuditLogParams {
   userId?: string;
   userEmail?: string;
   userRole?: string;
   action: string;
-  severity: 'low' | 'medium' | 'high';
+  severity?: SeverityInput;
   entity: string; // e.g. "User", "Post", "Order"
   entityId?: string;
   before?: Record<string, unknown>;
@@ -30,7 +33,7 @@ export async function writeAuditLog(params: AuditLogParams): Promise<void> {
         userEmail: params.userEmail,
         userRole: params.userRole ?? context?.userRole,
         action: params.action,
-        severity: params.severity,
+        severity: (params.severity?.toUpperCase() ?? 'LOW') as AuditSeverity,
         entity: params.entity,
         entityId: params.entityId,
         before: (params.before as object) ?? undefined,

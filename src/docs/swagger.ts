@@ -31,6 +31,10 @@ const options: swaggerJsdoc.Options = {
           description: 'Enter your JWT access token',
         },
       },
+      responses: {
+        BadRequest: { $ref: '#/components/schemas/ErrorResponse' },
+        Unauthorized: { $ref: '#/components/schemas/ErrorResponse' },
+      },
       schemas: {
         ApiResponse: {
           type: 'object',
@@ -71,7 +75,8 @@ const options: swaggerJsdoc.Options = {
       },
     },
   },
-  apis: ['./src/routes/*.ts', './src/modules/**/*.routes.ts'],
+  // Include controllers as well so Swagger picks up method-level JSDoc (security, params)
+  apis: ['./src/routes/*.ts', './src/modules/**/*.routes.ts', './src/modules/**/*.ts'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
@@ -85,11 +90,19 @@ export function setupSwagger(app: Application): void {
     swaggerUi.serve,
     swaggerUi.setup(swaggerSpec, {
       customSiteTitle: 'Student Onboarding API Docs',
+      // Ensure persisted auth and include request options to send cookies (withCredentials)
       swaggerOptions: {
         persistAuthorization: true,
         displayRequestDuration: true,
         filter: true,
         showExtensions: true,
+        // Include cookies in requests (so httpOnly refresh cookies will be sent if present)
+        requestInterceptor: (req: unknown) => {
+          // `credentials = 'include'` instructs the browser to include cookies for same-origin
+          // requests made by the Swagger UI client.
+          (req as { credentials?: string }).credentials = 'include';
+          return req;
+        },
       },
     }),
   );

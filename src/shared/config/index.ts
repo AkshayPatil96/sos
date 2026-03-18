@@ -35,6 +35,15 @@ const envSchema = z.object({
   DB_USER: z.string().min(1),
   DB_PASSWORD: z.string().min(1),
   DB_NAME: z.string().min(1),
+
+  // Email (AWS SES)
+  SES_FROM_EMAIL: z.string().email().optional(),
+  SES_FROM_NAME: z.string().min(1).default('Student Onboarding System'),
+
+  // Token expiry
+  PASSWORD_RESET_EXPIRES_MIN: z.string().default('60').transform(Number),
+  EMAIL_VERIFY_EXPIRES_HOURS: z.string().default('24').transform(Number),
+  INVITE_TOKEN_EXPIRES_HOURS: z.string().default('72').transform(Number),
 });
 
 const result = envSchema.safeParse(process.env);

@@ -1,4 +1,5 @@
 import { Router, type IRouter } from 'express';
+import { authRouter } from '@/modules/auth/auth.routes';
 
 const router: IRouter = Router();
 
@@ -26,7 +27,6 @@ const router: IRouter = Router();
  *             $ref: '#/components/schemas/ErrorResponse'
  */
 
-// Module routes will be mounted here in subsequent phases
-// e.g. router.use('/auth', authRouter);
+router.use('/auth', authRouter);
 
 export { router as apiRouter };
