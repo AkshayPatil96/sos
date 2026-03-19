@@ -69,4 +69,16 @@ router.post('/profile-changes/:requestId/approve', AdminController.approveProfil
  */
 router.post('/profile-changes/:requestId/reject', AdminController.rejectProfileChange);
 
+/**
+ * POST /admin/users/:userId/resend-verification
+ * Resend email verification link to an unverified user.
+ */
+router.post('/users/:userId/resend-verification', AdminController.resendVerificationEmail);
+
+/**
+ * PATCH /admin/users/:userId/email
+ * Correct a user's email address and send a new verification email.
+ */
+router.patch('/users/:userId/email', AdminController.correctUserEmail);
+
 export { router as adminRouter };

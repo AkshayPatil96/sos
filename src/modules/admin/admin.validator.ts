@@ -72,3 +72,7 @@ export const userIdParamSchema = z.object({
 export const changeRequestIdParamSchema = z.object({
   requestId: z.string().cuid(),
 });
+
+export const correctUserEmailSchema = z.object({
+  email: z.string().email().toLowerCase().trim(),
+});

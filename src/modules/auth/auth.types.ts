@@ -52,3 +52,11 @@ export interface SignInResponseDTO {
 export interface RefreshResponseDTO {
   accessToken: string;
 }
+
+export interface VerifyEmailResponseDTO {
+  message: string;
+  /** Present in development mode only — do not log or share */
+  setupToken?: string;
+  /** Present in development mode only — URL for testing without email */
+  setupUrl?: string;
+}

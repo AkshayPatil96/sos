@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import {
   UserRole,
   UserStatus,
@@ -9,7 +8,7 @@ import { prisma } from '@/lib/prisma';
 import type { IEmailService } from '@/lib/email';
 import { writeAuditLog } from '@/shared/utils/auditLog';
 import { Errors } from '@/shared/utils/AppError';
-import { generateSecureToken } from '@/shared/utils/token';
+import { generateSecureToken, hashToken } from '@/shared/utils/token';
 import { config } from '@/shared/config';
 import { parsePaginationQuery, buildPagination } from '@/shared/utils/pagination';
 import type { Pagination } from '@/shared/utils/response';
@@ -29,9 +28,6 @@ import type {
   ProfileChangeRequestDTO,
 } from './admin.types';
 import { AdminMapper } from './admin.mapper';
-
-/** bcrypt rounds for generated password hashing */
-const BCRYPT_ROUNDS = 12;
 
 /** Roles that are protected — only SUPER_ADMIN can target these users */
 const PROTECTED_ROLES: ReadonlySet<UserRole> = new Set([UserRole.SUPER_ADMIN, UserRole.ADMIN]);
@@ -76,15 +72,16 @@ export class AdminService {
   }
 
   /**
-   * Creates a new user account, sends a set-password email, and writes an audit log.
+   * Creates a new user account, sends a verification email, and writes an audit log.
    *
    * SUPER_ADMIN can create any role. ADMIN can only create STAFF/STUDENT.
+   * In development mode, skips the actual email send and returns token data instead.
    */
   async createUser(
     input: CreateUserInput,
     actor: ActorContext,
     meta: RequestMeta,
-  ): Promise<UserDetailDTO> {
+  ): Promise<{ user: UserDetailDTO; verifyToken?: string; verifyUrl?: string }> {
     this.assertHierarchyAllowed(actor, input.role);
     this.assertRoleAssignmentAllowed(actor, input.role);
 
@@ -95,16 +92,34 @@ export class AdminService {
       createdById: actor.id,
     });
 
-    // Generate a secure random set-password token and email it
     const rawToken = generateSecureToken();
-    const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000); // 48 hours
-    const setPasswordUrl = `${config.FRONTEND_URL}/auth/set-password?token=${rawToken}`;
+    const tokenHash = hashToken(rawToken);
+    const expiresAt = new Date(Date.now() + config.EMAIL_VERIFY_EXPIRES_HOURS * 60 * 60 * 1000);
+    const verifyUrl = `${config.FRONTEND_URL}/auth/verify-email?token=${rawToken}`;
 
-    // Hash the token before storage — raw value only travels in the email link
-    const tokenHash = await bcrypt.hash(rawToken, BCRYPT_ROUNDS);
-    await this.repo.createPasswordResetToken({ userId: user.id, tokenHash, expiresAt });
+    await prisma.$transaction(async (tx) => {
+      await this.repo.deleteEmailVerificationTokensForUser(user.id, tx);
+      await this.repo.createEmailVerificationToken({ userId: user.id, tokenHash, expiresAt }, tx);
+    });
 
-    await this.emailSvc.sendInviteEmail(user.email, user.name, setPasswordUrl);
+    if (config.NODE_ENV !== 'development') {
+      try {
+        await this.emailSvc.sendEmailVerificationEmail(user.email, user.name, verifyUrl);
+      } catch {
+        void writeAuditLog({
+          userId: actor.id,
+          action: 'ADMIN_CREATE_USER_FAILED',
+          entity: 'User',
+          entityId: user.id,
+          severity: 'high',
+          ipAddress: meta.ip,
+          userAgent: meta.userAgent,
+        });
+        throw Errors.serviceUnavailable(
+          'Unable to send verification email. Please try again later.',
+        );
+      }
+    }
 
     void writeAuditLog({
       userId: actor.id,
@@ -119,7 +134,17 @@ export class AdminService {
 
     const created = await this.repo.findUserById(user.id);
     if (!created) throw Errors.notFound('User', user.id);
-    return AdminMapper.toUserDetailDTO(created);
+
+    const response: { user: UserDetailDTO; verifyToken?: string; verifyUrl?: string } = {
+      user: AdminMapper.toUserDetailDTO(created),
+    };
+
+    if (config.NODE_ENV === 'development') {
+      response.verifyToken = rawToken;
+      response.verifyUrl = verifyUrl;
+    }
+
+    return response;
   }
 
   /**
@@ -496,5 +521,141 @@ export class AdminService {
       ipAddress: meta.ip,
       userAgent: meta.userAgent,
     });
+  }
+
+  /**
+   * Resends a new email verification link to an unverified user.
+   * Deletes any existing verification tokens and creates a fresh one.
+   * In development, skips the actual email send and returns token data instead.
+   */
+  async resendVerificationEmail(
+    userId: string,
+    actor: ActorContext,
+    meta: RequestMeta,
+  ): Promise<{ verifyToken?: string; verifyUrl?: string }> {
+    const user = await this.repo.findUserById(userId);
+    if (!user) throw Errors.notFound('User', userId);
+
+    if (user.isEmailVerified) {
+      throw Errors.badRequest('User email is already verified');
+    }
+
+    const rawToken = generateSecureToken();
+    const tokenHash = hashToken(rawToken);
+    const expiresAt = new Date(Date.now() + config.EMAIL_VERIFY_EXPIRES_HOURS * 60 * 60 * 1000);
+    const verifyUrl = `${config.FRONTEND_URL}/auth/verify-email?token=${rawToken}`;
+
+    await prisma.$transaction(async (tx) => {
+      await this.repo.deleteEmailVerificationTokensForUser(userId, tx);
+      await this.repo.createEmailVerificationToken({ userId, tokenHash, expiresAt }, tx);
+    });
+
+    if (config.NODE_ENV !== 'development') {
+      try {
+        await this.emailSvc.sendEmailVerificationEmail(user.email, user.name, verifyUrl);
+      } catch {
+        void writeAuditLog({
+          userId: actor.id,
+          action: 'ADMIN_RESEND_VERIFICATION_FAILED',
+          entity: 'User',
+          entityId: userId,
+          severity: 'high',
+          ipAddress: meta.ip,
+          userAgent: meta.userAgent,
+        });
+        throw Errors.serviceUnavailable(
+          'Unable to send verification email. Please try again later.',
+        );
+      }
+    }
+
+    void writeAuditLog({
+      userId: actor.id,
+      action: 'ADMIN_RESEND_VERIFICATION_EMAIL',
+      entity: 'User',
+      entityId: userId,
+      severity: 'medium',
+      after: { email: user.email },
+      ipAddress: meta.ip,
+      userAgent: meta.userAgent,
+    });
+
+    if (config.NODE_ENV === 'development') {
+      return { verifyToken: rawToken, verifyUrl };
+    }
+    return {};
+  }
+
+  /**
+   * Corrects a user's email address.
+   * Sets isEmailVerified=false, deletes old verification tokens, creates a new token,
+   * and sends a fresh verification email. Also writes an audit log.
+   * In development, skips the actual email send and returns token data instead.
+   */
+  async correctUserEmail(
+    userId: string,
+    input: { email: string },
+    actor: ActorContext,
+    meta: RequestMeta,
+  ): Promise<{ verifyToken?: string; verifyUrl?: string }> {
+    const user = await this.repo.findUserById(userId);
+    if (!user) throw Errors.notFound('User', userId);
+
+    const normalizedEmail = input.email.toLowerCase();
+
+    // Check email uniqueness (excluding the current user)
+    const existing = await this.repo.findUserByEmail(normalizedEmail);
+    if (existing && existing.id !== userId) {
+      throw Errors.conflict('Email address is already in use');
+    }
+
+    const before = { email: user.email };
+
+    const rawToken = generateSecureToken();
+    const tokenHash = hashToken(rawToken);
+    const expiresAt = new Date(Date.now() + config.EMAIL_VERIFY_EXPIRES_HOURS * 60 * 60 * 1000);
+    const verifyUrl = `${config.FRONTEND_URL}/auth/verify-email?token=${rawToken}`;
+
+    await prisma.$transaction(async (tx) => {
+      await this.repo.updateUserEmail(userId, normalizedEmail, tx);
+      await this.repo.deleteEmailVerificationTokensForUser(userId, tx);
+      await this.repo.createEmailVerificationToken({ userId, tokenHash, expiresAt }, tx);
+    });
+
+    if (config.NODE_ENV !== 'development') {
+      try {
+        await this.emailSvc.sendEmailVerificationEmail(normalizedEmail, user.name, verifyUrl);
+      } catch {
+        void writeAuditLog({
+          userId: actor.id,
+          action: 'ADMIN_CORRECT_EMAIL_FAILED',
+          entity: 'User',
+          entityId: userId,
+          severity: 'high',
+          ipAddress: meta.ip,
+          userAgent: meta.userAgent,
+        });
+        throw Errors.serviceUnavailable(
+          'Unable to send verification email. Please try again later.',
+        );
+      }
+    }
+
+    void writeAuditLog({
+      userId: actor.id,
+      action: 'ADMIN_CORRECT_USER_EMAIL',
+      entity: 'User',
+      entityId: userId,
+      severity: 'medium',
+      before,
+      after: { email: normalizedEmail },
+      ipAddress: meta.ip,
+      userAgent: meta.userAgent,
+    });
+
+    if (config.NODE_ENV === 'development') {
+      return { verifyToken: rawToken, verifyUrl };
+    }
+    return {};
   }
 }

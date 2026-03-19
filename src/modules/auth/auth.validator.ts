@@ -35,6 +35,6 @@ export const verifyEmailSchema = z.object({
 });
 
 export const setPasswordSchema = z.object({
-  token: z.string().min(1, 'Invite token is required'),
+  token: z.string().min(1, 'Setup token is required'),
   password: passwordSchema,
 });

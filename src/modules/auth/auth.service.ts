@@ -53,6 +53,7 @@ export class AuthService {
     meta: RequestMeta,
   ): Promise<SignInResponseDTO & { refreshToken: string }> {
     const user = await this.repo.findUserByEmail(input.email);
+    console.log('user: ', user);
 
     // Always run bcrypt compare to prevent timing attacks, even if user not found
     const dummyHash = '$2a$12$invalidhashfortimingnormalization000000000000000000000000';
@@ -61,6 +62,10 @@ export class AuthService {
     if (!user) {
       await bcrypt.compare(input.password, passwordToCompare);
       throw Errors.unauthorized('Invalid email or password');
+    }
+
+    if (!user.isEmailVerified) {
+      throw Errors.unauthorized('Email address is not verified');
     }
 
     // Check account status
@@ -147,8 +152,10 @@ export class AuthService {
     rawRefreshToken: string,
   ): Promise<RefreshResponseDTO & { refreshToken: string }> {
     const payload = verifyRefreshToken(rawRefreshToken);
+    console.log('payload: ', payload);
 
     const stored = await this.repo.findRefreshTokenByJti(payload.jti);
+    console.log('stored : ', stored);
     if (!stored) {
       throw Errors.unauthorized('Refresh token not found or already rotated');
     }
@@ -356,59 +363,88 @@ export class AuthService {
 
   /**
    * Verifies a user's email address using a token from the verification email.
+   * On success, issues a short-lived PasswordSetupToken (1h) for the user to set their password.
+   * In development mode, also returns the raw setup token and URL for testing without email.
    */
-  async verifyEmail(token: string, meta: RequestMeta): Promise<void> {
+  async verifyEmail(
+    token: string,
+    meta: RequestMeta,
+  ): Promise<{
+    message: string;
+    setupToken?: string;
+    setupUrl?: string;
+  }> {
+    console.log('token: ', token);
     const tokenHash = hashToken(token);
     const verifyToken = await this.repo.findEmailVerificationToken(tokenHash);
+    console.log('verifyToken: ', verifyToken);
 
     if (!verifyToken) {
-      throw Errors.badRequest('Invalid or expired email verification token');
+      throw Errors.badRequest('Invalid verification link');
     }
 
     const user = await this.repo.findUserById(verifyToken.userId);
+    console.log('user: ', user);
     if (!user) {
-      throw Errors.badRequest('Invalid or expired email verification token');
+      throw Errors.badRequest('Invalid verification link');
     }
 
     if (user.isEmailVerified) {
-      // Idempotent — already verified, just clean up and return
       await this.repo.deleteEmailVerificationToken(verifyToken.id);
-      return;
+      throw Errors.badRequest('Email is already verified');
     }
+
+    const rawSetupToken = generateSecureToken();
+    const setupTokenHash = hashToken(rawSetupToken);
+    const setupExpiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
     await prisma.$transaction(async (tx) => {
       await this.repo.markEmailVerified(user.id, tx);
       await this.repo.deleteEmailVerificationToken(verifyToken.id, tx);
+      await this.repo.upsertPasswordSetupToken(
+        { userId: user.id, tokenHash: setupTokenHash, expiresAt: setupExpiresAt },
+        tx,
+      );
     });
 
     void writeAuditLog({
       userId: user.id,
       userEmail: user.email,
-      action: 'AUTH_VERIFY_EMAIL',
+      action: 'USER_EMAIL_VERIFIED',
       entity: 'User',
       entityId: user.id,
-      severity: 'low',
+      severity: 'medium',
       ipAddress: meta.ip,
       userAgent: meta.userAgent,
     });
+
+    const response: { message: string; setupToken?: string; setupUrl?: string } = {
+      message: 'Email verified. Use the setup token to set your password.',
+    };
+
+    if (config.NODE_ENV === 'development') {
+      response.setupToken = rawSetupToken;
+      response.setupUrl = `${config.FRONTEND_URL}/auth/set-password?token=${rawSetupToken}`;
+    }
+
+    return response;
   }
 
   /**
-   * Sets the initial password for an invited or self-registered user.
-   * Requires an EmailVerificationToken — the user must not already have a password.
-   * Also marks the email as verified.
+   * Sets the initial password for a user who has already verified their email.
+   * Consumes a PasswordSetupToken — single use, expires in 1 hour.
    */
   async setPassword(input: SetPasswordInput, meta: RequestMeta): Promise<AuthUserDTO> {
     const tokenHash = hashToken(input.token);
-    const verifyToken = await this.repo.findEmailVerificationToken(tokenHash);
+    const setupToken = await this.repo.findPasswordSetupToken(tokenHash);
 
-    if (!verifyToken) {
-      throw Errors.badRequest('Invalid or expired invite token');
+    if (!setupToken) {
+      throw Errors.badRequest('Invalid or already used setup link');
     }
 
-    const user = await this.repo.findUserById(verifyToken.userId);
+    const user = await this.repo.findUserById(setupToken.userId);
     if (!user) {
-      throw Errors.badRequest('Invalid or expired invite token');
+      throw Errors.badRequest('Invalid or already used setup link');
     }
 
     if (user.password !== null) {
@@ -419,20 +455,19 @@ export class AuthService {
 
     await prisma.$transaction(async (tx) => {
       await this.repo.updateUserPassword(user.id, passwordHash, tx);
-      await this.repo.markEmailVerified(user.id, tx);
-      await this.repo.deleteEmailVerificationToken(verifyToken.id, tx);
+      await this.repo.deletePasswordSetupToken(setupToken.id, tx);
     });
 
-    // Re-fetch to get updated isEmailVerified / isProfileComplete
+    // Re-fetch to get updated isProfileComplete
     const updated = await this.repo.findUserById(user.id);
 
     void writeAuditLog({
       userId: user.id,
       userEmail: user.email,
-      action: 'AUTH_SET_PASSWORD',
+      action: 'USER_PASSWORD_SET',
       entity: 'User',
       entityId: user.id,
-      severity: 'low',
+      severity: 'medium',
       ipAddress: meta.ip,
       userAgent: meta.userAgent,
     });

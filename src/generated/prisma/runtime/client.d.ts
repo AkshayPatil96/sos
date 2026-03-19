@@ -2735,7 +2735,7 @@ declare interface PrismaPromise_2<
    * @param transaction transaction options
    */
   catch<R = never>(
-    onrejected?: ((reason: any) => R | PromiseLike<R>) | null,
+    onrejected?: ((reason: any) => R | PromiseLike<R>) | undefined | null,
     transaction?: PrismaPromiseTransaction,
   ): Promise<TResult | R>;
   /**
@@ -2744,7 +2744,7 @@ declare interface PrismaPromise_2<
    * @param transaction transaction options
    */
   finally(
-    onfinally?: (() => void) | null,
+    onfinally?: (() => void) | undefined | null,
     transaction?: PrismaPromiseTransaction,
   ): Promise<TResult>;
   /**

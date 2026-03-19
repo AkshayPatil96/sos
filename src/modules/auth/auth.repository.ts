@@ -3,6 +3,7 @@ import type {
   RefreshToken,
   PasswordResetToken,
   EmailVerificationToken,
+  PasswordSetupToken,
 } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
@@ -45,6 +46,23 @@ export interface IAuthRepository {
   }): Promise<void>;
   findEmailVerificationToken(tokenHash: string): Promise<EmailVerificationToken | null>;
   deleteEmailVerificationToken(id: string, tx?: PrismaTransactionClient): Promise<void>;
+
+  createPasswordSetupToken(data: {
+    userId: string;
+    tokenHash: string;
+    expiresAt: Date;
+  }): Promise<void>;
+  upsertPasswordSetupToken(
+    data: {
+      userId: string;
+      tokenHash: string;
+      expiresAt: Date;
+    },
+    tx?: PrismaTransactionClient,
+  ): Promise<void>;
+  findPasswordSetupToken(tokenHash: string): Promise<PasswordSetupToken | null>;
+  deletePasswordSetupToken(id: string, tx?: PrismaTransactionClient): Promise<void>;
+  deletePasswordSetupTokensForUser(userId: string): Promise<void>;
 }
 
 // ── Implementation ────────────────────────────────────────────────────────────
@@ -171,6 +189,50 @@ export class AuthRepository implements IAuthRepository {
   async deleteEmailVerificationToken(id: string, tx?: PrismaTransactionClient): Promise<void> {
     const db = tx ?? prisma;
     await db.emailVerificationToken.delete({ where: { id } });
+  }
+
+  // ── Password setup tokens ─────────────────────────────────────────────────
+
+  async createPasswordSetupToken(data: {
+    userId: string;
+    tokenHash: string;
+    expiresAt: Date;
+  }): Promise<void> {
+    await prisma.passwordSetupToken.create({ data });
+  }
+
+  async upsertPasswordSetupToken(
+    data: {
+      userId: string;
+      tokenHash: string;
+      expiresAt: Date;
+    },
+    tx?: PrismaTransactionClient,
+  ): Promise<void> {
+    const db = tx ?? prisma;
+    await db.passwordSetupToken.upsert({
+      where: { userId: data.userId },
+      update: { tokenHash: data.tokenHash, expiresAt: data.expiresAt },
+      create: { userId: data.userId, tokenHash: data.tokenHash, expiresAt: data.expiresAt },
+    });
+  }
+
+  async findPasswordSetupToken(tokenHash: string): Promise<PasswordSetupToken | null> {
+    return await prisma.passwordSetupToken.findFirst({
+      where: {
+        tokenHash,
+        expiresAt: { gt: new Date() },
+      },
+    });
+  }
+
+  async deletePasswordSetupToken(id: string, tx?: PrismaTransactionClient): Promise<void> {
+    const db = tx ?? prisma;
+    await db.passwordSetupToken.delete({ where: { id } });
+  }
+
+  async deletePasswordSetupTokensForUser(userId: string): Promise<void> {
+    await prisma.passwordSetupToken.deleteMany({ where: { userId } });
   }
 }
 

@@ -87,6 +87,8 @@ export interface IAdminRepository {
 
   updateUserRole(id: string, role: UserRole, tx?: PrismaTransactionClient): Promise<void>;
 
+  updateUserEmail(id: string, email: string, tx?: PrismaTransactionClient): Promise<void>;
+
   upsertAdminProfile(
     userId: string,
     data: {
@@ -169,6 +171,17 @@ export interface IAdminRepository {
     tokenHash: string;
     expiresAt: Date;
   }): Promise<void>;
+
+  createEmailVerificationToken(
+    data: {
+      userId: string;
+      tokenHash: string;
+      expiresAt: Date;
+    },
+    tx?: PrismaTransactionClient,
+  ): Promise<void>;
+  deleteEmailVerificationTokensForUser(userId: string, tx?: PrismaTransactionClient): Promise<void>;
+  findUserByEmail(email: string): Promise<User | null>;
 }
 
 // ── Implementation ────────────────────────────────────────────────────────────
@@ -256,6 +269,14 @@ export class AdminRepository implements IAdminRepository {
   async updateUserRole(id: string, role: UserRole, tx?: PrismaTransactionClient): Promise<void> {
     const db = tx ?? prisma;
     await db.user.update({ where: { id }, data: { role } });
+  }
+
+  async updateUserEmail(id: string, email: string, tx?: PrismaTransactionClient): Promise<void> {
+    const db = tx ?? prisma;
+    await db.user.update({
+      where: { id },
+      data: { email, isEmailVerified: false, emailVerifiedAt: null },
+    });
   }
 
   async upsertAdminProfile(
@@ -452,6 +473,30 @@ export class AdminRepository implements IAdminRepository {
     expiresAt: Date;
   }): Promise<void> {
     await prisma.passwordResetToken.create({ data });
+  }
+
+  async createEmailVerificationToken(
+    data: {
+      userId: string;
+      tokenHash: string;
+      expiresAt: Date;
+    },
+    tx?: PrismaTransactionClient,
+  ): Promise<void> {
+    const db = tx ?? prisma;
+    await db.emailVerificationToken.create({ data });
+  }
+
+  async deleteEmailVerificationTokensForUser(
+    userId: string,
+    tx?: PrismaTransactionClient,
+  ): Promise<void> {
+    const db = tx ?? prisma;
+    await db.emailVerificationToken.deleteMany({ where: { userId } });
+  }
+
+  async findUserByEmail(email: string): Promise<User | null> {
+    return prisma.user.findFirst({ where: { email, deletedAt: null } });
   }
 }
 

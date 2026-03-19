@@ -13,6 +13,7 @@ import {
   listProfileChangesQuerySchema,
   userIdParamSchema,
   changeRequestIdParamSchema,
+  correctUserEmailSchema,
 } from './admin.validator';
 import { AdminService } from './admin.service';
 import { adminRepository } from './admin.repository';
@@ -38,7 +39,8 @@ function getMeta(req: Request): { ip: string; userAgent: string } {
  *     summary: Create a new user account
  *     description: |
  *       SUPER_ADMIN can create any role. ADMIN can only create STAFF or STUDENT.
- *       Sends a set-password email to the new user.
+ *       Sends a verification email to the new user.
+ *       In development mode, token data is returned in the response instead of being sent via email.
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -67,11 +69,13 @@ function getMeta(req: Request): { ip: string; userAgent: string } {
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
  *         $ref: '#/components/responses/Forbidden'
+ *       503:
+ *         description: Email service unavailable
  */
 export const createUser = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const input = createUserSchema.parse(req.body);
-  const user = await adminService.createUser(input, getActor(req), getMeta(req));
-  sendCreated(res, user, 'User created successfully');
+  const result = await adminService.createUser(input, getActor(req), getMeta(req));
+  sendCreated(res, result, 'User created successfully');
 });
 
 /**
@@ -491,3 +495,94 @@ export const rejectProfileChange = asyncHandler(
     sendNoContent(res);
   },
 );
+
+/**
+ * @swagger
+ * /admin/users/{userId}/resend-verification:
+ *   post:
+ *     tags: [Admin]
+ *     summary: Resend email verification link to an unverified user
+ *     description: |
+ *       Deletes any existing verification tokens and sends a fresh verification email.
+ *       Can only be used for users whose email is not yet verified.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Verification email sent successfully
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       503:
+ *         description: Email service unavailable
+ */
+export const resendVerificationEmail = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const { userId } = userIdParamSchema.parse(req.params);
+    const result = await adminService.resendVerificationEmail(userId, getActor(req), getMeta(req));
+    sendSuccess(res, result, 'Verification email resent successfully');
+  },
+);
+
+/**
+ * @swagger
+ * /admin/users/{userId}/email:
+ *   patch:
+ *     tags: [Admin]
+ *     summary: Correct a user's email address
+ *     description: |
+ *       Updates the user's email, marks it as unverified, deletes old verification tokens,
+ *       creates a new verification token, and sends a fresh verification email.
+ *       In development mode, token data is returned in the response instead of being sent via email.
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Email updated and verification sent
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ *       409:
+ *         description: Email address already in use
+ *       503:
+ *         description: Email service unavailable
+ */
+export const correctUserEmail = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { userId } = userIdParamSchema.parse(req.params);
+  const input = correctUserEmailSchema.parse(req.body);
+  const result = await adminService.correctUserEmail(userId, input, getActor(req), getMeta(req));
+  sendSuccess(res, result, 'Email updated and verification sent');
+});

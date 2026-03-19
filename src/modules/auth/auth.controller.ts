@@ -25,7 +25,7 @@ function setRefreshCookie(res: Response, token: string): void {
   res.cookie('refreshToken', token, {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax' as const, // 'strict' can cause issues with some clients; 'lax' is a good balance
     maxAge: REFRESH_COOKIE_MAX_AGE_MS,
     path: '/',
   });
@@ -35,7 +35,7 @@ function clearRefreshCookie(res: Response): void {
   res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: 'lax' as const, // 'strict' can cause issues with some clients; 'lax' is a good balance
     path: '/',
   });
 }
@@ -240,7 +240,10 @@ export const changePassword = asyncHandler(async (req: Request, res: Response): 
  * /auth/verify-email:
  *   get:
  *     tags: [Auth]
- *     summary: Verify email address via token from verification email
+ *     summary: Verify email address and receive a setup token for password creation
+ *     description: |
+ *       Validates the email verification token. On success, returns a short-lived
+ *       setup token that must be used to set the account password within 1 hour.
  *     parameters:
  *       - in: query
  *         name: token
@@ -249,14 +252,22 @@ export const changePassword = asyncHandler(async (req: Request, res: Response): 
  *           type: string
  *     responses:
  *       200:
- *         description: Email verified successfully
+ *         description: Email verified — use setupToken to set password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 setupToken:
+ *                   type: string
+ *                   description: One-time token valid for 1 hour — send to POST /auth/set-password
  *       400:
  *         $ref: '#/components/responses/BadRequest'
  */
 export const verifyEmail = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const { token } = verifyEmailSchema.parse(req.query);
-  await authService.verifyEmail(token, getMeta(req));
-  sendSuccess(res, null, 'Email address verified successfully');
+  const { setupToken } = await authService.verifyEmail(token, getMeta(req));
+  sendSuccess(res, { setupToken }, 'Email verified. Use the setup token to set your password.');
 });
 
 /**
@@ -264,7 +275,11 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response): Pro
  * /auth/set-password:
  *   post:
  *     tags: [Auth]
- *     summary: Set initial password for an invited or self-registered user
+ *     summary: Set initial password using a setup token
+ *     description: |
+ *       Consumes the setup token returned by GET /auth/verify-email.
+ *       The token is valid for 1 hour and single-use. Password must meet
+ *       strength requirements: 8+ chars, 1 upper, 1 lower, 1 digit, 1 special char.
  *     requestBody:
  *       required: true
  *       content:
@@ -275,11 +290,13 @@ export const verifyEmail = asyncHandler(async (req: Request, res: Response): Pro
  *             properties:
  *               token:
  *                 type: string
+ *                 description: The setupToken from the verify-email response
  *               password:
  *                 type: string
+ *                 minLength: 8
  *     responses:
  *       200:
- *         description: Password set and account activated
+ *         description: Password set successfully — user can now sign in
  *       400:
  *         $ref: '#/components/responses/BadRequest'
  */

@@ -144,3 +144,7 @@ export interface ProfileChangeRequestDTO {
   reviewNote: string | null;
   createdAt: string;
 }
+
+export interface CorrectUserEmailInput {
+  email: string;
+}
