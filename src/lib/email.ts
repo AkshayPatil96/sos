@@ -1,6 +1,9 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { config } from '@/shared/config';
 import { logger } from '@/shared/utils/logger';
+import { passwordResetTemplate } from './email/templates/passwordReset';
+import { emailVerificationTemplate } from './email/templates/emailVerification';
+import { inviteTemplate } from './email/templates/invite';
 
 /**
  * Email service contract. All auth email sending goes through this interface.
@@ -23,62 +26,37 @@ class SESEmailService implements IEmailService {
       : `${config.SES_FROM_NAME} <noreply@example.com>`;
   }
 
-  /**
-   * Sends a password reset email with a tokenised link.
-   */
-  async sendPasswordResetEmail(to: string, name: string, resetUrl: string): Promise<void> {
-    const body = [
-      `Hi ${name},`,
-      '',
-      'We received a request to reset your password.',
-      'Click the link below to set a new password (valid for 60 minutes):',
-      '',
-      resetUrl,
-      '',
-      'If you did not request this, you can safely ignore this email.',
-      '',
-      `— ${config.SES_FROM_NAME}`,
-    ].join('\n');
-
-    await this.send(to, 'Reset your password', body);
+  async sendPasswordResetEmail(to: string, _name: string, resetUrl: string): Promise<void> {
+    const { subject, text, html } = passwordResetTemplate;
+    await this.send(to, subject, text(resetUrl, config.APP_NAME), html(resetUrl, config.APP_NAME));
   }
 
-  /**
-   * Sends an email verification link.
-   */
-  async sendEmailVerificationEmail(to: string, name: string, verifyUrl: string): Promise<void> {
-    const body = [
-      `Hi ${name},`,
-      '',
-      'Please verify your email address by clicking the link below (valid for 24 hours):',
-      '',
-      verifyUrl,
-      '',
-      `— ${config.SES_FROM_NAME}`,
-    ].join('\n');
-
-    await this.send(to, 'Verify your email address', body);
+  async sendEmailVerificationEmail(to: string, _name: string, verifyUrl: string): Promise<void> {
+    const { subject, text, html } = emailVerificationTemplate;
+    await this.send(
+      to,
+      subject,
+      text(verifyUrl, config.APP_NAME),
+      html(verifyUrl, config.APP_NAME),
+    );
   }
 
-  /**
-   * Sends an invite email so the user can set their initial password.
-   */
-  async sendInviteEmail(to: string, name: string, setPasswordUrl: string): Promise<void> {
-    const body = [
-      `Hi ${name},`,
-      '',
-      `Your account has been created on ${config.SES_FROM_NAME}.`,
-      'Click the link below to set your password and activate your account (valid for 72 hours):',
-      '',
-      setPasswordUrl,
-      '',
-      `— ${config.SES_FROM_NAME}`,
-    ].join('\n');
-
-    await this.send(to, `You're invited to ${config.SES_FROM_NAME}`, body);
+  async sendInviteEmail(to: string, _name: string, setPasswordUrl: string): Promise<void> {
+    const { subject, text, html } = inviteTemplate;
+    await this.send(
+      to,
+      `${subject} ${config.APP_NAME}`,
+      text(setPasswordUrl, config.APP_NAME),
+      html(setPasswordUrl, config.APP_NAME),
+    );
   }
 
-  private async send(to: string, subject: string, body: string): Promise<void> {
+  private async send(
+    to: string,
+    subject: string,
+    textBody: string,
+    htmlBody?: string,
+  ): Promise<void> {
     try {
       await this.client.send(
         new SendEmailCommand({
@@ -86,13 +64,16 @@ class SESEmailService implements IEmailService {
           Destination: { ToAddresses: [to] },
           Message: {
             Subject: { Data: subject, Charset: 'UTF-8' },
-            Body: { Text: { Data: body, Charset: 'UTF-8' } },
+            Body: {
+              Text: { Data: textBody, Charset: 'UTF-8' },
+              ...(htmlBody ? { Html: { Data: htmlBody, Charset: 'UTF-8' } } : {}),
+            },
           },
         }),
       );
-    } catch (error) {
-      logger.error('Failed to send email', { to, subject, error });
-      throw error;
+    } catch (err) {
+      logger.error('Failed to send email', { to, subject, error: err });
+      throw err;
     }
   }
 }
