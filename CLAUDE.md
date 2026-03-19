@@ -148,14 +148,17 @@ Production auto-deploys
 
 ### Commit Messages
 
-Conventional Commits enforced by commitlint:
+One line, present tense, no trailing period. If explanation is needed, add up to 3 bullet points below the subject. No Co-Authored-By footer.
 
 ```
-<type>(<scope>): <subject>
-
 feat(auth): add refresh token rotation
+
+- Rotate refresh token on every use
+- Blacklist old access token JTI on logout
+```
+
+```
 fix(fees): correct Decimal precision in ledger
-chore: add rate limiter middleware
 ```
 
 Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `perf`, `chore`, `ci`, `revert`
