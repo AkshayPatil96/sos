@@ -1,5 +1,6 @@
 import { Router, type IRouter } from 'express';
 import { authRouter } from '@/modules/auth/auth.routes';
+import { adminRouter } from '@/modules/admin/admin.routes';
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ const router: IRouter = Router();
  */
 
 router.use('/auth', authRouter);
+router.use('/admin', adminRouter);
 
 export { router as apiRouter };
