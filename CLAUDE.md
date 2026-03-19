@@ -146,6 +146,19 @@ Production auto-deploys
 
 **Short-lived branches** (`feature/`, `fix/`, `chore/`) are merged and deleted.
 
+### Branch and Commit Rules for Claude Code Sessions
+
+Before starting any task:
+1. Check the current branch name
+2. Ask if it matches the task being worked on
+3. If not, ask whether to create a new branch. If yes, create it and switch before working
+4. If no, continue work on the current branch
+
+After completing any meaningful chunk of work:
+- Always commit the changes (even if not pushing)
+- Write a clear, concise commit message following the format below
+- Do not wait for the user to ask — commit when the work is done
+
 ### Commit Messages
 
 One line, present tense, no trailing period. If explanation is needed, add up to 3 bullet points below the subject. No Co-Authored-By footer.
