@@ -1,6 +1,9 @@
 import { Router, type IRouter } from 'express';
 import { requireAuth } from '@/shared/middlewares/auth.middleware';
-import { strictRateLimiter } from '@/shared/middlewares/rateLimiter.middleware';
+import {
+  strictRateLimiter,
+  moderateRateLimiter,
+} from '@/shared/middlewares/rateLimiter.middleware';
 import * as AuthController from './auth.controller';
 
 const router: IRouter = Router();
@@ -14,8 +17,9 @@ router.post('/signin', strictRateLimiter, AuthController.signIn);
 /**
  * POST /auth/refresh
  * Issues a new access token using the httpOnly refresh token cookie.
+ * Moderately rate-limited — refresh tokens are short-lived and rotation is tracked.
  */
-router.post('/refresh', AuthController.refresh);
+router.post('/refresh', moderateRateLimiter, AuthController.refresh);
 
 /**
  * POST /auth/logout
@@ -32,8 +36,9 @@ router.post('/forgot-password', strictRateLimiter, AuthController.forgotPassword
 /**
  * POST /auth/reset-password
  * Requires a valid reset token from the forgot-password email.
+ * Moderately rate-limited to prevent token-guessing attacks.
  */
-router.post('/reset-password', AuthController.resetPassword);
+router.post('/reset-password', moderateRateLimiter, AuthController.resetPassword);
 
 /**
  * PATCH /auth/change-password

@@ -52,5 +52,12 @@ export default defineConfig([
       // 'no-console': 'warn',
     },
   },
+  {
+    files: ['src/lib/email.ts'],
+    rules: {
+      // False positive: `this.send(...)` is called directly, not passed as a callback
+      '@typescript-eslint/unbound-method': 'off',
+    },
+  },
   prettierConfig,
 ]);

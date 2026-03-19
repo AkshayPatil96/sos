@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
+import ms from 'ms';
 import { UserStatus } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 import { cache } from '@/lib/cache';
@@ -35,6 +36,8 @@ const MAX_FAILED_ATTEMPTS = 10;
 const BCRYPT_ROUNDS = 12;
 /** bcrypt rounds for refresh token hashing (lower — token has its own entropy) */
 const REFRESH_TOKEN_BCRYPT_ROUNDS = 10;
+/** Refresh token TTL parsed from config (e.g. "7d" → 604800000 ms) */
+const REFRESH_TOKEN_TTL_MS = ms(config.JWT_REFRESH_EXPIRES_IN as Parameters<typeof ms>[0]);
 
 export class AuthService {
   constructor(
@@ -110,8 +113,8 @@ export class AuthService {
     const rawRefreshToken = signRefreshToken({ sub: user.id, jti: uuidv4() });
     const refreshHash = await bcrypt.hash(rawRefreshToken, REFRESH_TOKEN_BCRYPT_ROUNDS);
 
-    // Store hashed refresh token — expiry mirrors JWT_REFRESH_EXPIRES_IN (7d default)
-    const refreshExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    // Store hashed refresh token — expiry mirrors JWT_REFRESH_EXPIRES_IN
+    const refreshExpiry = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
     await this.repo.createRefreshToken({
       jti,
       userId: user.id,
@@ -174,7 +177,7 @@ export class AuthService {
     const accessToken = signAccessToken({ sub: user.id, role: user.role, jti: newJti });
     const newRawRefreshToken = signRefreshToken({ sub: user.id, jti: uuidv4() });
     const newHash = await bcrypt.hash(newRawRefreshToken, REFRESH_TOKEN_BCRYPT_ROUNDS);
-    const refreshExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const refreshExpiry = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
 
     await this.repo.createRefreshToken({
       jti: newJti,
@@ -234,10 +237,27 @@ export class AuthService {
     const tokenHash = hashToken(rawToken);
     const expiresAt = new Date(Date.now() + config.PASSWORD_RESET_EXPIRES_MIN * 60 * 1000);
 
-    await this.repo.createPasswordResetToken({ userId: user.id, tokenHash, expiresAt });
-
     const resetUrl = `${config.FRONTEND_URL}/auth/reset-password?token=${rawToken}`;
-    await this.emailSvc.sendPasswordResetEmail(user.email, user.name, resetUrl);
+
+    try {
+      await this.emailSvc.sendPasswordResetEmail(user.email, user.name, resetUrl);
+    } catch {
+      // If email fails, do not leave a usable reset token in the DB
+      void writeAuditLog({
+        userId: user.id,
+        userEmail: user.email,
+        action: 'AUTH_FORGOT_PASSWORD_FAILED',
+        entity: 'User',
+        entityId: user.id,
+        severity: 'high',
+        ipAddress: meta.ip,
+        userAgent: meta.userAgent,
+      });
+      throw Errors.serviceUnavailable('Unable to send email. Please try again later.');
+    }
+
+    // Email sent successfully — now store the token
+    await this.repo.createPasswordResetToken({ userId: user.id, tokenHash, expiresAt });
 
     void writeAuditLog({
       userId: user.id,

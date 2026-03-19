@@ -28,3 +28,16 @@ export const strictRateLimiter = rateLimit({
     next(Errors.tooManyRequests());
   },
 });
+
+/**
+ * Moderate rate limiter for sensitive non-auth routes — 10 requests per 15 minutes.
+ */
+export const moderateRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req, _res, next) => {
+    next(Errors.tooManyRequests());
+  },
+});
