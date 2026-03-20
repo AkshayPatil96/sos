@@ -27,6 +27,10 @@ const envSchema = z.object({
   AWS_S3_PRESIGNED_URL_EXPIRY: z.string().default('900').transform(Number),
 
   SENTRY_DSN: z.string().url().optional(),
+  ENABLE_MONITORING: z
+    .string()
+    .default('true')
+    .transform((v) => v === 'true'),
   LOG_LEVEL: z.enum(['debug', 'info', 'http', 'warn', 'error']).default('info'),
 
   RATE_LIMIT_WINDOW_MS: z.string().default('900000').transform(Number),

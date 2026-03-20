@@ -8,8 +8,9 @@ import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 const dsn = process.env.SENTRY_DSN;
 const environment = process.env.NODE_ENV ?? 'development';
+const enableMonitoring = process.env.ENABLE_MONITORING !== 'false';
 
-if (dsn) {
+if (dsn && enableMonitoring) {
   Sentry.init({
     dsn,
     environment,
@@ -25,3 +26,4 @@ if (dsn) {
 }
 
 export { Sentry };
+export { enableMonitoring };

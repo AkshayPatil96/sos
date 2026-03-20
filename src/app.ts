@@ -74,7 +74,9 @@ app.use(sanitizeInput);
 app.use(morganMiddleware);
 
 // 9. Prometheus metrics middleware — before rate limiter so rate-limited reqs are counted
-app.use(metricsMiddleware);
+if (config.ENABLE_MONITORING) {
+  app.use(metricsMiddleware);
+}
 
 // 10. Rate limiter on /api paths
 app.use('/api', rateLimiter);
@@ -112,41 +114,44 @@ app.use('/api', rateLimiter);
  */
 // 11. Prometheus metrics scrape endpoint
 // Accessible only from the internal Docker network in production (not behind /api)
-/**
- * Restricts /metrics to internal network access only.
- * Allows localhost and Docker bridge network (172.x.x.x).
- * Blocks all external IPs in production.
- */
-function metricsGuard(req: Request, res: Response, next: NextFunction): void {
-  if (config.NODE_ENV === 'development') {
+// Only mounted when ENABLE_MONITORING=true
+if (config.ENABLE_MONITORING) {
+  /**
+   * Restricts /metrics to internal network access only.
+   * Allows localhost and Docker bridge network (172.x.x.x).
+   * Blocks all external IPs in production.
+   */
+  function metricsGuard(req: Request, res: Response, next: NextFunction): void {
+    if (config.NODE_ENV === 'development') {
+      next();
+      return;
+    }
+
+    const ip = req.ip ?? '';
+    const isAllowed =
+      ip === '127.0.0.1' ||
+      ip === '::1' ||
+      ip === '::ffff:127.0.0.1' ||
+      ip.startsWith('172.') || // Docker bridge network
+      ip.startsWith('10.'); // Docker swarm / custom networks
+
+    if (!isAllowed) {
+      logger.warn('Blocked unauthorized /metrics access', { ip, path: req.path });
+      res.status(403).json({ success: false, message: 'Forbidden', code: 'FORBIDDEN' });
+      return;
+    }
+
     next();
-    return;
   }
-
-  const ip = req.ip ?? '';
-  const isAllowed =
-    ip === '127.0.0.1' ||
-    ip === '::1' ||
-    ip === '::ffff:127.0.0.1' ||
-    ip.startsWith('172.') || // Docker bridge network
-    ip.startsWith('10.'); // Docker swarm / custom networks
-
-  if (!isAllowed) {
-    logger.warn('Blocked unauthorized /metrics access', { ip, path: req.path });
-    res.status(403).json({ success: false, message: 'Forbidden', code: 'FORBIDDEN' });
-    return;
-  }
-
-  next();
+  app.get('/metrics', metricsGuard, async (_req, res) => {
+    try {
+      res.set('Content-Type', register.contentType);
+      res.end(await register.metrics());
+    } catch (err) {
+      res.status(500).end(String(err));
+    }
+  });
 }
-app.get('/metrics', metricsGuard, async (_req, res) => {
-  try {
-    res.set('Content-Type', register.contentType);
-    res.end(await register.metrics());
-  } catch (err) {
-    res.status(500).end(String(err));
-  }
-});
 
 // 12. Dev-only route explorer — lists every registered Express route
 // Useful for debugging and cross-checking against your Swagger docs
@@ -175,7 +180,9 @@ app.use('/api/v1', apiRouter);
 
 // 16. Sentry error handler — must be BEFORE notFoundHandler and globalErrorHandler
 // Captures all unhandled errors and attaches Sentry trace context to req
-Sentry.setupExpressErrorHandler(app);
+if (config.ENABLE_MONITORING) {
+  Sentry.setupExpressErrorHandler(app);
+}
 
 // 17. 404 handler — must come after all routes
 app.use(notFoundHandler);

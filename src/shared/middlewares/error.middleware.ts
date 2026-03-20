@@ -7,7 +7,7 @@ import { AppError } from '@/shared/utils/AppError';
 import { logger } from '@/shared/utils/logger';
 import { config } from '@/shared/config';
 import { Prisma } from '@/generated/prisma/client';
-import { Sentry } from '@/lib/sentry';
+import { Sentry, enableMonitoring } from '@/lib/sentry';
 
 /**
  * Global Express error handler. Must be 4-argument middleware.
@@ -141,9 +141,11 @@ export function globalErrorHandler(
   const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 
   // Report to Sentry — only non-operational errors reach here (bugs, not user errors)
-  Sentry.captureException(err, {
-    extra: { path: req.path },
-  });
+  if (enableMonitoring) {
+    Sentry.captureException(err, {
+      extra: { path: req.path },
+    });
+  }
 
   logger.error('Unhandled error', {
     path: req.path,
