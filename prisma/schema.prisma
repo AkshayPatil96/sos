@@ -85,6 +85,7 @@ model User {
 
   refreshTokens           RefreshToken[]
   passwordResetTokens     PasswordResetToken[]
+  passwordSetupTokens     PasswordSetupToken[]
   emailVerificationTokens EmailVerificationToken[]
   userPermissions         UserPermission[]
 
@@ -320,6 +321,19 @@ model PasswordResetToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([tokenHash])
+  @@index([expiresAt])
+}
+
+model PasswordSetupToken {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([tokenHash])
   @@index([expiresAt])
 }
