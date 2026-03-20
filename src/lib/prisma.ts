@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@/generated/prisma/client';
 import { logger } from '@/shared/utils/logger';
-import { Sentry } from '@/lib/sentry';
+import { Sentry, enableMonitoring } from '@/lib/sentry';
 import { dbQueryDuration } from '@/lib/metrics';
 
 const adapter = new PrismaPg({
@@ -24,7 +24,8 @@ function createPrismaClient(): PrismaClient {
    * Queries slower than 500 ms are logged as warnings and sent to Sentry.
    */
   client.$on('query', (e) => {
-    // Always record in Prometheus regardless of speed
+    if (!enableMonitoring) return;
+
     dbQueryDuration.observe(e.duration);
 
     if (e.duration > 500) {

@@ -8,7 +8,7 @@ import hpp from 'hpp';
 import listEndpoints from 'express-list-endpoints';
 
 import { Sentry } from '@/lib/sentry';
-import { register } from '@/lib/metrics';
+import { register, initMetrics } from '@/lib/metrics';
 import { config } from '@/shared/config';
 import { metricsMiddleware } from '@/shared/middlewares/metrics.middleware';
 import { sanitizeInput } from '@/shared/middlewares/sanitize.middleware';
@@ -75,6 +75,7 @@ app.use(morganMiddleware);
 
 // 9. Prometheus metrics middleware — before rate limiter so rate-limited reqs are counted
 if (config.ENABLE_MONITORING) {
+  initMetrics();
   app.use(metricsMiddleware);
 }
 

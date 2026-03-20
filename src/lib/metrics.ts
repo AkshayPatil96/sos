@@ -9,8 +9,13 @@ import { Registry, Counter, Histogram, collectDefaultMetrics } from 'prom-client
 
 export const register = new Registry();
 
-// Default Node.js metrics: event loop lag, GC, heap, file descriptors, etc.
-collectDefaultMetrics({ register });
+/**
+ * Initialise default Node.js metrics collection (event loop lag, GC, heap, etc.).
+ * Call only when ENABLE_MONITORING=true — starts a 10-second interval timer.
+ */
+export function initMetrics(): void {
+  collectDefaultMetrics({ register });
+}
 
 /**
  * Total HTTP requests, labelled by method, normalized route, and status code.

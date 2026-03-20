@@ -28,9 +28,15 @@ const envSchema = z.object({
 
   SENTRY_DSN: z.string().url().optional(),
   ENABLE_MONITORING: z
-    .string()
-    .default('true')
-    .transform((v) => v === 'true'),
+    .preprocess((val) => {
+      if (typeof val === 'string') {
+        const s = val.trim().toLowerCase();
+        if (['true', '1', 'yes', 'y'].includes(s)) return true;
+        if (['false', '0', 'no', 'n'].includes(s)) return false;
+      }
+      return val;
+    }, z.boolean())
+    .default(false),
   LOG_LEVEL: z.enum(['debug', 'info', 'http', 'warn', 'error']).default('info'),
 
   RATE_LIMIT_WINDOW_MS: z.string().default('900000').transform(Number),
