@@ -56,6 +56,12 @@ enum ChangeRequestField {
   DEPARTMENT
   COURSE
   BATCH
+  SECTION
+  DESIGNATION
+  JOINING_DATE
+  REPORTING_TO
+  ADMISSION_DATE
+  ACADEMIC_YEAR
 }
 
 // =============================================================================
