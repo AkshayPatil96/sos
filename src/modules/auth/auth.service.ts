@@ -108,15 +108,16 @@ export class AuthService {
     // Success — reset failure count, update lastLoginAt
     await this.repo.updateUserLoginSuccess(user.id);
 
-    const jti = uuidv4();
-    const accessToken = signAccessToken({ sub: user.id, role: user.role, jti });
-    const rawRefreshToken = signRefreshToken({ sub: user.id, jti: uuidv4() });
+    const accessJti = uuidv4();
+    const refreshJti = uuidv4();
+    const accessToken = signAccessToken({ sub: user.id, role: user.role, jti: accessJti });
+    const rawRefreshToken = signRefreshToken({ sub: user.id, jti: refreshJti });
     const refreshHash = await bcrypt.hash(rawRefreshToken, REFRESH_TOKEN_BCRYPT_ROUNDS);
 
     // Store hashed refresh token — expiry mirrors JWT_REFRESH_EXPIRES_IN
     const refreshExpiry = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
     await this.repo.createRefreshToken({
-      jti,
+      jti: refreshJti,
       userId: user.id,
       hash: refreshHash,
       expiresAt: refreshExpiry,
@@ -190,7 +191,7 @@ export class AuthService {
   }
 
   /**
-   * Logs out: deletes the refresh token and blacklists the access token JTI.
+   * Logs out: deletes all refresh tokens for the user and blacklists the access token JTI.
    */
   async logout(
     userId: string,
@@ -198,8 +199,8 @@ export class AuthService {
     accessExp: number,
     meta: RequestMeta,
   ): Promise<void> {
-    // Remove refresh token from DB
-    await this.repo.deleteRefreshTokenByJti(accessJti);
+    // Remove all refresh tokens from DB — user must re-authenticate on all devices
+    await this.repo.deleteAllRefreshTokensForUser(userId);
 
     // Blacklist the access token until it naturally expires
     const ttl = getRemainingTtl(accessExp);
